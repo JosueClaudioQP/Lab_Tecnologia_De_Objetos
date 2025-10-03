@@ -33,4 +33,18 @@ public class Trapecio{
             return sum * h;
         }
     }
+
+    public static void main(String[] args) {
+        long n = 1000000;
+        Funcion f = new FuncionEjemplo();
+        double a = 2.0, b = 20.0;
+
+        Integrador integrador = new Integrador(f, a, b, n);
+        long t0 = System.currentTimeMillis();
+        double result = integrador.integrar();
+        long t1 = System.currentTimeMillis();
+
+        System.out.printf("Integral aproximada (Trapecio) = %.10f%n", result);
+        System.out.printf("Subintervalos = %d, Tiempo = %d ms%n", n, (t1 - t0));
+    }
 }
