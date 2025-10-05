@@ -22,3 +22,22 @@ double integrarPorTrapecio(double a, double b, long n){
     delete[] valores;
     return resultado;
 }
+
+int main(){
+    double a = 2.0;
+    double b = 20.0;
+    long n = 1000000;
+
+    auto inicio = chrono::high_resolution_clock::now();
+    double resultado = integrarPorTrapecio(a, b, n);
+    auto fin = chrono::high_resolution_clock::now();
+
+    chrono::duration<double, milli> duracion = fin - inicio;
+
+    cout.precision(14);
+    cout << fixed;
+    cout << "Integral aproximada (Trapecio) = " << resultado << endl;
+    cout << "Subintervalos = " << n << ", Tiempo = " << duracion.count() << " ms" << endl;
+
+    return 0;
+}
