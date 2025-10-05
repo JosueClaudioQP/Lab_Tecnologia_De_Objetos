@@ -17,7 +17,7 @@ void integrarParcial(double a, double h, long inicio, long fin, long double &res
     resultado_parcial = suma;
 }
 
-long double integrarPoTrapecioParalelo(double a, double b, long n, int num_hilos) {
+long double integrarPorTrapecioParalelo(double a, double b, long n, int num_hilos) {
     double h = (b - a) / n;
     long double suma_total = 0.5L * (f(a) + f(b));
 
@@ -41,4 +41,23 @@ long double integrarPoTrapecioParalelo(double a, double b, long n, int num_hilos
     delete[] resultados;
 
     return suma_total * h;
+}
+
+int main() {
+    double a = 2.0, b = 20.0;
+    long n = 1000000;
+    int num_hilos = 4;
+
+    auto inicio = chrono::high_resolution_clock::now();
+    long double resultado = integrarPorTrapecioParalelo(a, b, n, num_hilos);
+    auto fin = chrono::high_resolution_clock::now();
+
+    chrono::duration<double, milli> duracion = fin - inicio;
+
+    cout.precision(15);
+    cout << "Integral aproximada (Trapecio paralelo) = " << (double)resultado << endl;
+    cout << "Subintervalos = " << n << ", Hilos = " << num_hilos
+         << ", Tiempo = " << duracion.count() << " ms" << endl;
+
+    return 0;
 }
