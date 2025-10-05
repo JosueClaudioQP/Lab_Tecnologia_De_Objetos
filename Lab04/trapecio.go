@@ -20,3 +20,15 @@ type IntegradorTrapecio struct {
 	n      int64
 	funcion Funcion
 }
+
+func (it IntegradorTrapecio) Integrar() float64 {
+	h := (it.b - it.a) / float64(it.n)
+	sumaTotal := 0.5 * (it.funcion.Evaluar(it.a) + it.funcion.Evaluar(it.b))
+
+	for i := int64(1); i < it.n; i++ {
+		x := it.a + float64(i)*h
+		sumaTotal += it.funcion.Evaluar(x)
+	}
+
+	return sumaTotal * h
+}
