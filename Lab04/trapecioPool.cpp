@@ -1,62 +1,83 @@
 #include <iostream>
 #include <cmath>
 #include <thread>
+#include <vector>
 #include <chrono>
 using namespace std;
 
-double f(double x){
-    return 2.0 * x * x + 3.0 * x + 0.5;
-}
-
-void integrarParcial(double a, double h, long inicio, long fin, long double &resultado_parcial) {
-    long double suma = 0.0;
-    for(long i = inicio; i <= fin; i++){
-        double x = a + i * h;
-        suma += f(x);
-    }
-    resultado_parcial = suma;
-}
-
-long double integrarPorTrapecioParalelo(double a, double b, long n, int num_hilos) {
-    double h = (b - a) / n;
-    long double suma_total = 0.5L * (f(a) + f(b));
-
-    thread* hilos = new thread[num_hilos];
-    long double* resultados = new long double[num_hilos];
-
-    long pasos_por_hilo = n / num_hilos;
-
-    for (int i = 0; i < num_hilos; i++) {
-        long inicio = i * pasos_por_hilo + 1;
-        long fin = (i == num_hilos - 1) ? (n - 1) : ((i + 1) * pasos_por_hilo);
-        hilos[i] = thread(integrarParcial, a, h, inicio, fin, ref(resultados[i]));
+class Funcion {
+public:
+    virtual double evaluar(double x) const {
+        return 2.0 * x * x + 3.0 * x + 0.5;
     }
 
-    for (int i = 0; i < num_hilos; i++) {
-        hilos[i].join();
-        suma_total += resultados[i];
+    virtual ~Funcion() = default;
+};
+
+class IntegradorTrapecioParalelo {
+private:
+    double a, b;
+    long n;
+    int numHilos;
+    const Funcion& funcion;
+
+    void integrarParcial(double h, long inicio, long fin, long double& resultadoParcial) const {
+        long double suma = 0.0;
+        for (long i = inicio; i <= fin; ++i) {
+            double x = a + i * h;
+            suma += funcion.evaluar(x);
+        }
+        resultadoParcial = suma;
     }
 
-    delete[] hilos;
-    delete[] resultados;
+public:
+    IntegradorTrapecioParalelo(double a_, double b_, long n_, int numHilos_, const Funcion& funcion_)
+        : a(a_), b(b_), n(n_), numHilos(numHilos_), funcion(funcion_) {}
 
-    return suma_total * h;
-}
+    long double integrar() const {
+        double h = (b - a) / n;
+        long double sumaTotal = 0.5L * (funcion.evaluar(a) + funcion.evaluar(b));
+
+        vector<thread> hilos(numHilos);
+        vector<long double> resultados(numHilos, 0.0);
+
+        long pasosPorHilo = n / numHilos;
+
+        for (int i = 0; i < numHilos; ++i) {
+            long inicio = i * pasosPorHilo + 1;
+            long fin = (i == numHilos - 1) ? (n - 1) : ((i + 1) * pasosPorHilo);
+
+            hilos[i] = thread(&IntegradorTrapecioParalelo::integrarParcial, this,
+                              h, inicio, fin, ref(resultados[i]));
+        }
+
+        for (int i = 0; i < numHilos; ++i) {
+            hilos[i].join();
+            sumaTotal += resultados[i];
+        }
+
+        return sumaTotal * h;
+    }
+};
 
 int main() {
     double a = 2.0, b = 20.0;
     long n = 1000000;
-    int num_hilos = 4;
+    int numHilos = 4;
+
+    Funcion funcion;
+
+    IntegradorTrapecioParalelo integrador(a, b, n, numHilos, funcion);
 
     auto inicio = chrono::high_resolution_clock::now();
-    long double resultado = integrarPorTrapecioParalelo(a, b, n, num_hilos);
+    long double resultado = integrador.integrar();
     auto fin = chrono::high_resolution_clock::now();
 
     chrono::duration<double, milli> duracion = fin - inicio;
 
     cout.precision(15);
     cout << "Integral aproximada (Trapecio paralelo) = " << (double)resultado << endl;
-    cout << "Subintervalos = " << n << ", Hilos = " << num_hilos
+    cout << "Subintervalos = " << n << ", Hilos = " << numHilos
          << ", Tiempo = " << duracion.count() << " ms" << endl;
 
     return 0;

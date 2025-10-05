@@ -1,35 +1,55 @@
 #include <iostream>
 #include <cmath>
 #include <chrono>
+#include <vector>
 using namespace std;
 
-double f(double x){
-    return 2.0 * x * x + 3.0 * x + 0.5;
-}
+class Funcion {
+public:
+    virtual double evaluar(double x) const = 0;
+    virtual ~Funcion() = default;
+};
 
-double integrarPorTrapecio(double a, double b, long n){
-    double h = (b - a)/n;
-    double suma_total = 0.5 * (f(a) + f(b));
-    double* valores = new double[n - 1];
-    for(long i = 1; i < n; i++){
-        double x = a + i * h;
-        valores[i - 1] = f(x);
+class FuncionCuadratica : public Funcion {
+public:
+    double evaluar(double x) const override {
+        return 2.0 * x * x + 3.0 * x + 0.5;
     }
-    for(long i = 0; i < n - 1; i++){
-        suma_total += valores[i];
-    }
-    double resultado = suma_total * h;
-    delete[] valores;
-    return resultado;
-}
+};
 
-int main(){
+class IntegradorTrapecio {
+private:
+    double a, b;
+    long n;
+    const Funcion& funcion;
+
+public:
+    IntegradorTrapecio(double a_, double b_, long n_, const Funcion& funcion_)
+        : a(a_), b(b_), n(n_), funcion(funcion_) {}
+
+    double integrar() const {
+        double h = (b - a) / n;
+        double sumaTotal = 0.5 * (funcion.evaluar(a) + funcion.evaluar(b));
+
+        for (long i = 1; i < n; ++i) {
+            double x = a + i * h;
+            sumaTotal += funcion.evaluar(x);
+        }
+
+        return sumaTotal * h;
+    }
+};
+
+int main() {
     double a = 2.0;
     double b = 20.0;
     long n = 1000000;
 
+    FuncionCuadratica funcion;
+    IntegradorTrapecio integrador(a, b, n, funcion);
+
     auto inicio = chrono::high_resolution_clock::now();
-    double resultado = integrarPorTrapecio(a, b, n);
+    double resultado = integrador.integrar();
     auto fin = chrono::high_resolution_clock::now();
 
     chrono::duration<double, milli> duracion = fin - inicio;
