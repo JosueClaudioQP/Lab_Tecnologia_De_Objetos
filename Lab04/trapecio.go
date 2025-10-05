@@ -32,3 +32,24 @@ func (it IntegradorTrapecio) Integrar() float64 {
 
 	return sumaTotal * h
 }
+
+func main() {
+	a := 2.0
+	b := 20.0
+	n := int64(1000000)
+
+	funcion := FuncionCuadratica{}
+	integrador := IntegradorTrapecio{
+		a: a,
+		b: b,
+		n: n,
+		funcion: funcion,
+	}
+
+	inicio := time.Now()
+	resultado := integrador.Integrar()
+	duracion := time.Since(inicio)
+
+	fmt.Printf("Integral aproximada (Trapecio) = %.14f\n", resultado)
+	fmt.Printf("Subintervalos = %d, Tiempo = %.3f ms\n", n, float64(duracion.Microseconds())/1000.0)
+}
