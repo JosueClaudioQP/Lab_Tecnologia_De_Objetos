@@ -4,7 +4,7 @@
 using namespace std;
 
 double f(double x){
-    return 2.0 * x * + 3.0 * x + 0.5;
+    return 2.0 * x * x + 3.0 * x + 0.5;
 }
 
 double integrarPorTrapecio(double a, double b, long n){
