@@ -1,10 +1,5 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.*;
+import java.util.concurrent.*;
 
 public class TrapecioPool {
 
@@ -47,12 +42,21 @@ public class TrapecioPool {
         for (Future<Double> futuro : resultados) { 
             sumaTotal += futuro.get(); 
         }
-        
+
         pool.shutdown(); 
         return sumaTotal * h; 
     }
 
-    public static void main(String[] args) {
-        
+    public static void main(String[] args) throws InterruptedException, ExecutionException {
+        double a = 2.0, b = 20.0; 
+        long n = 1000000; 
+        int numHilos = 12; 
+        System.out.println("Subintervalos: " + n); 
+        System.out.println("Numero de hilos: " + numHilos); 
+        long inicio = System.currentTimeMillis(); 
+        double resultado = integrarPorTrapecioParalelo(a, b, n, numHilos); 
+        long fin = System.currentTimeMillis(); 
+        System.out.printf("Resultado aproximado = %.15f%n", resultado); 
+        System.out.printf("Tiempo total = %d ms%n", (fin - inicio));
     }
 }
