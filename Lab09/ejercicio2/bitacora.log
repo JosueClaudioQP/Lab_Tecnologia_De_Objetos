@@ -1,0 +1,10 @@
+Tue Dec  2 22:28:21 2025
+: Inicio del programa
+Tue Dec  2 22:28:21 2025
+: Probando segundo logger
+[Tue Dec  2 22:30:42 2025] INFO : Inicio del sistema.
+[Tue Dec  2 22:30:42 2025] WARNING : Uso elevado de memoria detectado.
+[Tue Dec  2 22:30:42 2025] ERROR : No se pudo conectar al servidor.
+[Tue Dec  2 22:30:42 2025] INFO : [Modulo A] Cargando configuraciones...
+[Tue Dec  2 22:30:42 2025] WARNING : [Modulo B] Tiempo de respuesta lento.
+[Tue Dec  2 22:30:42 2025] ERROR : Fallo crítico en el módulo C
