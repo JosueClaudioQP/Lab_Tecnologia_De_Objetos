@@ -35,12 +35,11 @@ public:
     bool getEstado() const { return juegoActivo; }
 
     void imprimirEstado() const {
-        std::cout << "\n=== ESTADO DEL JUEGO ===\n";
+        std::cout << "\nESTADO DEL JUEGO\n";
         std::cout << "Nivel: " << nivel << "\n";
         std::cout << "Puntaje: " << puntaje << "\n";
         std::cout << "Vidas: " << vidas << "\n";
         std::cout << "Juego Activo: " << (juegoActivo ? "Sí" : "No") << "\n";
-        std::cout << "=========================\n";
     }
 };
 
